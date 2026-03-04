@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NTTF AAPC Strategic Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #c9a961 0%, #e8d4a0 50%, #b89247 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 90vh;
+        }
+
+        /* Header Styling */
+        .header {
+            background: linear-gradient(135deg, #d4a853 0%, #f0d991 50%, #c99742 100%);
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 4px solid #9d7628;
+            height: 140px;
+        }
+
+        .logo-container {
+            width: 220px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .header-content {
+            flex: 1;
+            margin-left: 30px;
+            text-align: right;
+        }
+
+        .header h1 {
+            color: #4a3810;
+            font-size: 2.2em;
+            margin-bottom: 5px;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.4);
+        }
+
+        .motto {
+            color: #6b4f1a;
+            font-size: 1.1em;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            background: #4a3810;
+            overflow-x: auto;
+            border-bottom: 3px solid #d4a853;
+            scrollbar-width: thin;
+            scrollbar-color: #d4a853 #4a3810;
+        }
+
+        .nav-tabs::-webkit-scrollbar {
+            height: 8px;
+        }
+        .nav-tabs::-webkit-scrollbar-thumb {
+            background-color: #d4a853;
+            border-radius: 4px;
+        }
+
+        .nav-tab {
+            padding: 18px 24px;
+            cursor: pointer;
+            color: #e8d4a0;
+            border: none;
+            background: transparent;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
+        }
+
+        .nav-tab:hover {
+            background: rgba(212, 168, 83, 0.2);
+            color: #fff;
+        }
+
+        .nav-tab.active {
+            background: #d4a853;
+            color: #2c1f0a;
+            box-shadow: inset 0 -4px 0 #8b6f3d;
+        }
+
+        /* Content Area */
+        .content {
+            padding: 40px;
+            flex: 1;
+            background: #fdfbf7;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards & Hierarchy */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(139, 111, 61, 0.1);
+            border-left: 6px solid #d4a853;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .card h2 {
+            color: #6b4f1a;
+            margin-bottom: 25px;
+            font-size: 2em;
+            border-bottom: 2px solid #e8d4a0;
+            padding-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .card h3 {
+            color: #8b6f3d;
+            margin: 25px 0 15px 0;
+            font-size: 1.4em;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #fff9e6 0%, #fff 100%);
+            border: 1px solid #e8d4a0;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        /* Expandable Sections */
+        .expandable {
+            margin-bottom: 15px;
+            border: 1px solid #e8d4a0;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .expandable-header {
+            background: linear-gradient(to right, #fbf6e6, #fff);
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            font-weight: 700;
+            color: #5c4615;
+            font-size: 1.1em;
+        }
+
+        .expandable-header:hover {
+            background: #f0e6cc;
+            padding-left: 25px;
+        }
+
+        .expandable-header .arrow {
+            transition: transform 0.3s ease;
+            font-size: 0.9em;
+            color: #9d7628;
+        }
+
+        .expandable.open .arrow {
+            transform: rotate(90deg);
+        }
+
+        .expandable-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0, 1, 0, 1);
+            padding: 0 25px;
+            opacity: 0;
+        }
+
+        .expandable.open .expandable-content {
+            max-height: 5000px; /* Increased for deeper content */
+            padding: 25px;
+            opacity: 1;
+            transition: max-height 0.8s ease-in-out, opacity 0.5s ease-in-out;
+            border-top: 1px solid #e8d4a0;
+        }
+
+        /* Levels & Insight Boxes */
+        .level2 {
+            margin-left: 15px;
+            padding-left: 20px;
+            border-left: 3px solid #e8d4a0;
+            margin-top: 20px;
+        }
+
+        .level3 {
+            margin-left: 15px;
+            padding-left: 20px;
+            border-left: 3px dashed #d4a853;
+            margin-top: 20px;
+        }
+
+        .strategic-insight {
+            background: #f1f8e9;
+            border-left: 5px solid #7cb342;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+            color: #33691e;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .strategic-insight::before {
+            content: "💡 Strategic Insight";
+            display: block;
+            font-weight: 800;
+            font-style: normal;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            letter-spacing: 1px;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            font-size: 0.95em;
+        }
+
+        th {
+            background: #bfa05f;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 14px 15px;
+            border-bottom: 1px solid #eee;
+            color: #444;
+            vertical-align: top;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:nth-child(even) {
+            background-color: #fdfbf7;
+        }
+
+        tr:hover {
+            background-color: #f5f0e1;
+        }
+
+        /* KPI Dashboard Grids */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 25px 0;
+        }
+
+        .kpi-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #e8d4a0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #d4a853, #f0d991);
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(139, 111, 61, 0.2);
+        }
+
+        .kpi-value {
+            font-size: 2.8em;
+            font-weight: 800;
+            color: #6b4f1a;
+            margin: 15px 0;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .kpi-label {
+            color: #888;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .kpi-trend {
+            font-size: 0.9em;
+            margin-top: 10px;
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .trend-up { background: #e8f5e9; color: #2e7d32; }
+        .trend-neutral { background: #fff3e0; color: #ef6c00; }
+
+        /* Timelines */
+        .timeline {
+            position: relative;
+            padding-left: 50px;
+            margin: 30px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #e8d4a0;
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 35px;
+            padding: 20px 25px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -39px;
+            top: 25px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #d4a853;
+            border: 4px solid white;
+            box-shadow: 0 0 0 3px #e8d4a0;
+        }
+
+        /* Lists */
+        ul, ol { margin: 15px 0 15px 25px; line-height: 1.7; color: #444; }
+        li { margin-bottom: 8px; }
+
+        /* Footer */
+        .footer {
+            margin-top: auto;
+            background: #4a3810;
+            color: #d4a853;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9em;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .footer-left { text-align: left; }
+        .footer-right { text-align: right; font-size: 0.85em; color: #f0d991; font-weight: 600; }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 700;
+            margin-right: 5px;
+        }
+        .bg-gold { background-color: #d4a853; color: white; }
+        .bg-green { background-color: #66bb6a; color: white; }
+        .bg-blue { background-color: #42a5f5; color: white; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header { flex-direction: column; text-align: center; padding: 20px; height: auto; }
+            .header-content { margin-left: 0; margin-top: 15px; text-align: center; }
+            .logo-container { justify-content: center; width: 100%; margin-bottom: 15px; }
+            .nav-tabs { flex-direction: row; overflow-x: scroll; }
+            .content { padding: 20px; }
+            .kpi-grid { grid-template-columns: 1fr; }
+            .footer { flex-direction: column; text-align: center; gap: 10px; }
+            .footer-right { text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <script>
+        function showSection(sectionId, clickedElement) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+            
+            if (clickedElement) {
+                clickedElement.classList.add('active');
+            }
+        }
+        
+        function toggleExpand(element) {
+            const expandable = element.parentElement;
+            expandable.classList.toggle('open');
+        }
+    </script>
+
+    <div class="container">
+        <div class="header">
+            <div class="logo-container">
+                <!-- Neelavati Logo: Depth, Elegance, Innovation -->
+                <svg viewBox="0 0 200 100" width="200" height="100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="goldText" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ffeebb;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#d4a853;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#996600;stop-opacity:1" />
+                        </linearGradient>
+                        <filter id="shadow">
+                            <feDropShadow dx="1" dy="1" stdDeviation="1" flood-color="#000" flood-opacity="0.5"/>
+                        </filter>
+                    </defs>
+                    <text x="5" y="45" font-family="'Segoe UI', sans-serif" font-weight="bold" font-size="40" fill="url(#goldText)" filter="url(#shadow)">नीला</text>
+                    <text x="90" y="45" font-family="'Segoe UI', sans-serif" font-weight="bold" font-size="40" fill="url(#goldText)" filter="url(#shadow)">Vati</text>
+                    <text x="10" y="70" font-family="Arial, sans-serif" font-size="14" fill="#f0d991" font-weight="bold" filter="url(#shadow)">Depth</text>
+                    <text x="10" y="85" font-family="Arial, sans-serif" font-size="14" fill="#f0d991" font-weight="bold" filter="url(#shadow)">Elegance</text>
+                    <text x="10" y="100" font-family="Arial, sans-serif" font-size="14" fill="#f0d991" font-weight="bold" filter="url(#shadow)">Innovation</text>
+                </svg>
+            </div>
+            <div class="header-content">
+                <h1>NTTF Alumni Association Pune Chapter</h1>
+                <div class="motto">Strategic Growth Dashboard | 2025-2030</div>
+            </div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('executive', this)">Executive Summary</button>
+            <button class="nav-tab" onclick="showSection('swot', this)">SWOT Analysis</button>
+            <button class="nav-tab" onclick="showSection('objectives', this)">Strategic Objectives</button>
+            <button class="nav-tab" onclick="showSection('roadmap', this)">Execution Roadmap</button>
+            <button class="nav-tab" onclick="showSection('pillars', this)">Action Plans</button>
+            <button class="nav-tab" onclick="showSection('governance', this)">Governance</button>
+            <button class="nav-tab" onclick="showSection('financial', this)">Financial Strategy</button>
+            <button class="nav-tab" onclick="showSection('risks', this)">Risks & Mitigation</button>
+            <button class="nav-tab" onclick="showSection('monitoring', this)">KPI Dashboard</button>
+        </div>
+
+        <div class="content">
+            <!-- 1. Executive Summary -->
+            <div id="executive" class="section active">
+                <div class="card">
+                    <h2><span style="font-size:1.5em">📋</span> Executive Summary</h2>
+                    <div class="highlight-box">
+                        <h3>Vision Statement</h3>
+                        <p><strong>To establish NTTF Alumni Association Pune Chapter as the preeminent industrial community hub and center of excellence for tooling, precision manufacturing, and technical talent development in Pune and Western Maharashtra—driving innovation, creating opportunities, and empowering the next generation of manufacturing leaders.</strong></p>
+                    </div>
+
+                    <div class="expandable">
+                        <div class="expandable-header" onclick="toggleExpand(this)">
+                            <span>Current State Assessment (Deep Dive)</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="expandable-content">
+                            <p><strong>Organizational Profile:</strong></p>
+                            <ul>
+                                <li><strong>Member Base:</strong> 2,500-3,000 alumni across Pune region</li>
+                                <li><strong>Leadership Structure:</strong> Chairman + 13-member committee</li>
+                                <li><strong>Key Annual Events:</strong> Tooling Expo Pune (13-15 Nov 2025), AGM (13 Dec 2025)</li>
+                                <li><strong>Industry Focus:</strong> Tool & die making, precision manufacturing, automotive sector</li>
+                            </ul>
+                            <div class="level2">
+                                <h4>Current Strengths Analysis</h4>
+                                <ul>
+                                    <li><strong>Strong Alumni Network:</strong> Many members in leadership/entrepreneurial positions</li>
+                                    <li><strong>Strategic Location:</strong> Pune manufacturing hub with MIDC, Auto Cluster, SME ecosystem</li>
+                                    <li><strong>Established Events:</strong> Successful Tooling Expo demonstrates convening power</li>
+                                    <li><strong>NTTF Brand Legacy:</strong> Respected technical training institution with 60+ years history</li>
+                                </ul>
+                                <div class="level3">
+                                    <h4>Competitive Positioning Matrix</h4>
+                                    <table>
+                                        <tr>
+                                            <th>Organization Type</th>
+                                            <th>NTTF AAPC Position</th>
+                                            <th>Competitive Advantage</th>
+                                        </tr>
+                                        <tr>
+                                            <td>Industry Associations (MCCIA, PIMAC)</td>
+                                            <td>Complementary Partner</td>
+                                            <td>Technical depth in tooling vs. broad business focus</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Training Institutes (ITI, Private)</td>
+                                            <td>Value-Added Network</td>
+                                            <td>Industry connectivity + placement support</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Other Alumni Associations</td>
+                                            <td>Niche Technical Leader</td>
+                                            <td>Specialized manufacturing focus vs. general networking</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="expandable">
+                        <div class="expandable-header" onclick="toggleExpand(this)">
+                            <span>Transformation Goals (2025-2030)</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="expandable-content">
+                            <div class="kpi-grid">
+                                <div class="kpi-card">
+                                    <div class="kpi-label">Active Members</div>
+                                    <div class="kpi-value">5,000+</div>
+                                    <small>From 2,500</small>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-label">Annual Placements</div>
+                                    <div class="kpi-value">500+</div>
+                                    <small>Graduates placed annually</small>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-label">Industry Partners</div>
+                                    <div class="kpi-value">100+</div>
+                                    <small>MoU-based partnerships</small>
+                                </div>
+                            </div>
+                            <div class="level2">
+                                <h4>Strategic Transformation Themes</h4>
+                                <ol>
+                                    <li><strong>From Event-Driven to Program-Driven:</strong> Transform from annual events to year-round, structured initiatives creating continuous value.</li>
+                                    <li><strong>From Networking to Ecosystem Building:</strong> Evolve from social connections to strategic industry partnerships driving business outcomes.</li>
+                                    <li><strong>From Passive to Active Career Support:</strong> Move from informal job sharing to comprehensive placement, mentorship, and entrepreneurship support.</li>
+                                    <li><strong>From Traditional to Digital-First:</strong> Leverage technology for member engagement, learning management, and data-driven decision making.</li>
+                                </ol>
+                                <div class="strategic-insight">
+                                    <strong>Strategic Insight:</strong> Success requires balancing ambition with pragmatism. The roadmap employs a "pilot-prove-scale" methodology: start with focused initiatives (mentor program with 20 pairs), demonstrate measurable impact, then systematically scale.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. SWOT Analysis -->
+            <div id="swot" class="section">
+                <div class="card">
+                    <h2><span style="font-size:1.5em">⚖️</span> SWOT Analysis</h2>
+                    <div class="expandable">
+                        <div class="expandable-header" onclick="toggleExpand(this)">
+                            <span>Detailed Strengths & Weaknesses</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="expandable-content">
+                            <table>
+                                <tr>
+                                    <th width="50%">Strength Category</th>
+                                    <th width="50%">Strategic Leverage</th>
+                                </tr>
+                                <tr>
+                                    <td><strong>Alumni Quality & Reach:</strong> 2,500-3,000 members, many in senior/entrepreneurial roles.</td>
+                                    <td>Mentor pool, industry access, placement opportunities, fundraising base.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>NTTF Brand Heritage:</strong> 60+ years of technical excellence.</td>
+                                    <td>Credibility for partnerships, quality signal for recruitment.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Established Events:</strong> Successful Tooling Expo.</td>
+                                    <td>Revenue generation, sponsor attraction, showcase for programs.</td>
+                                </tr>
+                            </table>
+                            <div class="level2">
+                                <h4>Weakness Remediation Framework</h4>
+                                <table>
+                                    <tr>
+                                        <th>Weakness</th>
+                                        <th>Business Impact</th>
+                                        <th>Remediation Priority</th>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Limited Full-Time Resources</strong></td>
+                                        <td>Inconsistent execution, bandwidth constraints.</td>
+                                        <td>HIGH - Hire Executive Coordinator.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Financial Constraints</strong></td>
+                                        <td>Cannot launch ambitious programs.</td>
+                                        <td>HIGH - Diversify revenue sources.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Digital Infrastructure Gap</strong></td>
+                                        <td>Cannot scale engagement efficiently.</td>
+                                        <td>HIGH - Invest in integrated CRM/LMS.</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="expandable">
+                        <div class="expandable-header" onclick="toggleExpand(this)">
+                            <span>Detailed Opportunities & Threats</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="expandable-content">
+                            <table>
+                                <tr>
+                                    <th width="50%">Opportunity Category</th>
+                                    <th width="50%">Potential Impact</th>
+                                </tr>
+                                <tr>
+                                    <td><strong>Manufacturing Renaissance (PLI):</strong> ₹1.97 lakh crore schemes.</td>
+                                    <td>Surge in skilled worker demand, training opportunities.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Industry 4.0 / Digital Mfg:</strong> AI/ML in design, IoT.</td>
+                                    <td>New training domains (AI for tooling), differentiation.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>CSR Funding:</strong> Corporate mandates for skilling.</td>
+                                    <td>Funding for programs without compromising mission.</td>
+                                </tr>
+                            </table>
+                            <div class="level2">
+                                <h4>Threat Response Strategies</h4>
+                                <table>
+                                    <tr>
+                                        <th>Threat</th>
+                                        <th>Likelihood</th>
+                                        <th>Mitigation Strategy</th>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Private Training Competition</strong></td>
+                                        <td>HIGH</td>
+                                        <td>Differentiate on quality, brand heritage, alumni network.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Technology Disruption</strong></td>
+                                        <td>MEDIUM</td>
+                                        <td>Pivot to advanced tech training, hybrid skills.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Economic Slowdown</strong></td>
+                                        <td>MEDIUM</td>
+                                        <td>Diversify industry sectors, government partnerships.</td>
+                                    </tr>
+                                </table>
+                                <div class="strategic-insight">
+                                    <strong>Strategic Insight:</strong> The biggest existential threat is technology disruption—but it's also the biggest opportunity. Rather than competing with manual machining (declining), NTTF AAPC should own the "Industry 4.0 for Tooling" space.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Strategic Objectives -->
+            <div id="objectives" class="section">
+                <div class="card">
+                    <h2><span style="font-size:1.5em">🎯</span> Strategic Objectives (2025-2030)</h2>
+                    
+                    <div class="expandable">
+                        <div class="expandable-header" onclick="toggleExpand(this)">
+                            <span>Obj 1: Industry Visibility & Recognition</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="expandable-content">
+                            <p><strong>Goal:</strong> Establish NTTF AAPC as the premier voice and recognized authority for tooling and precision manufacturing in Western Maharashtra.</p>
+                            <table>
+                                <tr>
+                                    <th>Metric</th>
+                                    <th>Baseline (2025)</th>
+                                    <th>Year 1 Target</th>
+                                    <th>Year 3 Target</th>
+                                    <th>Year 5 Target</th>
+                                </tr>
+                                <tr>
+                                    <td>Media Mentions</td>
+                                    <td>5-10/year</td>
+                                    <td>25/year</td>
+                                    <td>60/year</td>
+                                    <td>100+/year</td>
+                                </tr>
+                                <tr>
+                                    <td>Speaking Engagements</td>
+                                    <td>2-3/year</td>
+                                    <td>10/year</td>
+                                    <td>20/year</td>
+                                    <td>30+/year</td>
+                                </tr>
+                                <tr>
+                                    <td>LinkedIn Followers</td>
+                                    <td>~500</td>
+                                    <td>2,000</td>
+                                    <td>7,000</td>
+                                    <td>15,000</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="expandable">
+                        <div class="expandable-header" onclick="toggleExpand(this)">
+                            <span>Obj 2: Alumni Development</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="expandable-content">
+                            <p><strong>Goal:</strong> Create systematic programs for mentorship, networking, and entrepreneurship support.</p>
+                            <table>
+                                <tr>
+                                    <th>Metric</th>
+                                    <th>Baseline</th>
+                                    <th>Year 1 Target</th>
+                                    <th>Year 3 Target</th>
+                                    <th>Year 5 Target</th>
+                                </tr>
+                                <tr>
+                                    <td>Mentorship Pairs</td>
+                                    <td>0</td>
+                                    <td>50 pairs</td>
+                                    <td>150 pairs</td>
+                                    <td>300 pairs</td>
+                                </tr>
+                                <tr>
+                                    <td>Entrepreneurs Supported</td>
+                                    <td>0</td>
+                                    <td>10</td>
+                                    <td>30</td>
+                                    <td>60</td>
+                                </tr>
+                                <tr>
+                                    <td>Networking Events</td>
+                                    <td>1-2/year</td>
+                                    <td>8/year</td>
+                                    <td>15/year</td>
+                                    <td>24/year</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="expandable">
+                        <div class="expandable-header" onclick="toggleExpand(this)">
+                            <span>Obj 3: Industry Collaboration</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="expandable-content">
+                            <p><strong>Goal:</strong> Build formalized, strategic partnerships with manufacturing industries.</p>
+                            <table>
+                                <tr>
+                                    <th>Metric</th>
+                                    <th>Baseline</th>
+                                    <th>Year 1 Target</th>
+                                    <th>Year 3 Target</th>
+                                    <th>Year 5 Target</th>
+                                </tr>
+                                <tr>
+                                    <td>Formal Industry Partners</td>
+                                    <td>2-3</td>
+                                    <td>15</td>
+                                    <td>50</td>
+                                    <td>100+</td>
+                                </tr>
+                                <tr>
+                                    <td>Joint Training Programs</td>
+                                    <td>0</td>
+                                    <td>3</td>
+                                    <td>10</td>
+                                    <td>20</td>
+                                </tr>
+                                <tr>
+                                    <td>CSR Partnerships</td>
+                                    <td>0</td>
+                                    <td>5</td>
+                                    <td>15</td>
+                                    <td>25+</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="expandable">
+                        <div class="expandable-header" onclick="toggleExpand(this)">
+                            <span>Objectives 4-9 (Operational & Growth)</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="expandable-content">
+                             <table>
+                                <tr>
+                                    <th>Objective</th>
+                                    <th>Year 1 Target</th>
+                                    <th>Year 3 Target</th>
+                                    <th>Year 5 Target</th>
+                                </tr>
+                                <tr>
+                                    <td><strong>Obj 4: Placement</strong></td>
+                                    <td>200 placements</td>
+                                    <td>350 placements</td>
+                                    <td>500+ placements</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Obj 5: Onboarding</strong></td>
+                                    <td>100 onboarded</td>
+                                    <td>250 onboarded</td>
+                                    <td>400+ onboarded</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Obj 6: Skill Dev</strong></td>
+                                    <td>300 participants</td>
+                                    <td>1000 participants</td>
+                                    <td>2000+ participants</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Obj 7: Fundraising</strong></td>
+                                    <td>₹75 lakhs</td>
+                                    <td>₹2 crore</td>
+                                    <td>₹4 crore</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Obj 8: ICT/AI</strong></td>
+                                    <td>4 seminars</td>
+                                    <td>Innovation forums</td>
+                                    <td>Tech Summit</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Obj 9: Soft Skills</strong></td>
+                                    <td>150 trained</td>
+                                    <td>400 trained</td>
+                                    <td>Diploma program</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Execution Roadmap -->
+            <div id="roadmap" class="section">
+                <div class="card">
+                    <h2><span style="font-size:1.5em">🛣️</span> Execution Roadmap</h2>
+                    
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <h3>Phase 1: Foundation Building (Year 1 - 2026)</h3>
+                            <span class="badge bg-gold">Months 0-12</span>
+                            <div class="level2">
+                                <h4>Q1 (Jan-Mar): Organizational Setup</h4>
+                                <ul>
+                                    <li>Form 5 sub-committees: Placement, Training, Industry Relations, Communications, Finance.</li>
+                                    <li>Recruit part-time executive coordinator.</li>
+                                    <li>Implement basic CRM system and Website redesign.</li>
+                                </ul>
+                                <h4>Q2 (Apr-Jun): Program Pilots</h4>
+                                <ul>
+                                    <li>Launch Mentorship Program Pilot (20 pairs).</li>
+                                    <li>Secure 5 industry partner MOUs.</li>
+                                    <li>First placement drive: Target 50 graduates placed.</li>
+                                </ul>
+                                <h4>Q3 (Jul-Sep): Scale & Refine</h4>
+                                <ul>
+                                    <li>Evaluate pilot programs.</li>
+                                    <li>Secure first 3 CSR partnerships.</li>
+                                    <li>Launch entrepreneur support cell.</li>
+                                </ul>
+                                <h4>Q4 (Oct-Dec): Consolidation</h4>
+                                <ul>
+                                    <li>Tooling Expo 2026 execution.</li>
+                                    <li>Year-end review at AGM.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <h3>Phase 2: Growth & Expansion (Years 2-3)</h3>
+                            <span class="badge bg-blue">Months 13-36</span>
+                            <p><strong>Mission:</strong> Scale successful programs, diversify offerings, strengthen industry ecosystem.</p>
+                            <ul>
+                                <li><strong>Scaling:</strong> Mentorship 50 → 150 pairs; Placements 200 → 350/year.</li>
+                                <li><strong>Infrastructure:</strong> Consider dedicated training center, upgrade to enterprise CRM.</li>
+                                <li><strong>Partnerships:</strong> Expand to 50 MOUs, 15 CSR partners.</li>
+                                <li><strong>New Programs:</strong> Advanced manufacturing certifications, Women in manufacturing.</li>
+                            </ul>
+                        </div>
+
+                        <div class="timeline-item">
+                            <h3>Phase 3: Leadership & Excellence (Years 4-5)</h3>
+                            <span class="badge bg-green">Months 37-60</span>
+                            <p><strong>Mission:</strong> Establish NTTF AAPC as the undisputed leader in tooling talent development.</p>
+                            <ul>
+                                <li><strong>Center of Excellence:</strong> Research and innovation hub.</li>
+                                <li><strong>National Footprint:</strong> Replicate model in other hubs.</li>
+                                <li><strong>Policy Influence:</strong> Contribute to national skill policies.</li>
+                                <li><strong>Targets:</strong> 500+ placements, ₹4 crore revenue.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Action Plans by Pillar -->
+            <div id="pillars" class="section">
+                <div class="card">
+                    <h2><span style="font-size:1.5em">🏛️</span> Action Plans by Pillar</h2>
+                    <p class="highlight-box">Deep dive into the 9 strategic pillars driving the transformation.</p>
+
+                    <div class="expandable">
+                        <div class="expandable-header" onclick="toggleExpand(this)">
+                            <span>Pillar 1: Industry Visibility</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="expandable-content">
+                            <ul>
+                                <li><strong>Short-Term:</strong> Launch monthly blog series, Hire PR consultant, Create Excellence Awards.</li>
+                                <li><strong>Medium-Term:</strong> Publish "State of Tooling" research, 20+ speaking engagements.</li>
+                                <li><strong>Long-Term:</strong> Host national tooling conference, 15k LinkedIn followers.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="expandable">
+                        <div class="expandable-header" onclick="toggleExpand(this)">
+                            <span>Pillar 2: Alumni Development</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="expandable-content">
+                            <ul>
+                                <li><strong>Short-Term:</strong> Mentorship pilot (20 pairs), Entrepreneur cell launch, Job board.</li>
+                                <li><strong>Medium-Term:</strong> 150 mentorship pairs, Incubator with shared equipment.</li>
+                                <li><strong>Long-Term:</strong> 300+ pairs, 60 entrepreneurs supported, Family Day (1000+).</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="expandable">
+                        <div class="expandable-header" onclick="toggleExpand(this)">
+                            <span>Pillar 3: Industry Collaboration</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="expandable-content">
+                            <ul>
+                                <li><strong>Short-Term:</strong> 15 MOUs, 3 joint training programs, 5 CSR partnerships.</li>
+                                <li><strong>Medium-Term:</strong> 50 MOUs, Industry Advisory Board formed.</li>
+                                <li><strong>Long-Term:</strong> 100+ partners, 15 collaborative R&D projects.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="expandable">
+                        <div class="expandable-header" onclick="toggleExpand(this)">
+                            <span>Pillar 4: Graduate Hiring</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="expandable-content">
+                            <ul>
+                                <li><strong>Short-Term:</strong> 200 placements, dedicated placement cell, job portal launch.</li>
+                                <li><strong>Medium-Term:</strong> 350 placements, campus recruitment model.</li>
+                                <li><strong>Long-Term:</strong> 500+ placements, 85% placement rate, salary benchmarking.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="expandable">
+                        <div class="expandable-header" onclick="toggleExpand(this)">
+                            <span>Pillar 8: ICT & Technology Integration</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="expandable-content">
+                            <div class="level2">
+                                <h4>Digital Manufacturing Focus</h4>
+                                <ul>
+                                    <li><strong>Short Term:</strong> Seminars on Digital Twin technology in Tooling.</li>
+                                    <li><strong>Medium Term:</strong> Certification courses on Intelligent Quality Control.</li>
+                                    <li><strong>Long Term:</strong> Launch a Smart Factory Lab for hands-on training.</li>
+                                </ul>
+                                <div class="strategic-insight">
+                                    <strong>Strategic Insight:</strong> Integrating advanced digital curriculum is the highest leverage move to differentiate NTTF from standard ITIs. It justifies higher course fees and attracts premium employer partners.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. Governance -->
+            <div id="governance" class="section">
+                <div class="card">
+                    <h2><span style="font-size:1.5em">⚖️</span> Governance Structure</h2>
+                    
+                    <div class="expandable">
+                        <div class="expandable-header" onclick="toggleExpand(this)">
+                            <span>Committee Structure & Mandate</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="expandable-content">
+                            <table>
+                                <tr>
+                                    <th>Committee</th>
+                                    <th>Mandate</th>
+                                    <th>Composition</th>
+                                </tr>
+                                <tr>
+                                    <td><strong>Executive Committee</strong></td>
+                                    <td>Strategy, governance, financial oversight.</td>
+                                    <td>Chairman + 4 Office Bearers</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Placement Cell</strong></td>
+                                    <td>Graduate hiring, employer relations.</td>
+                                    <td>Lead + 4 members</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Skill Dev Committee</strong></td>
+                                    <td>Curriculum, training, faculty.</td>
+                                    <td>Lead + 5 members</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Industry Relations</strong></td>
+                                    <td>Partnerships, CSR fundraising.</td>
+                                    <td>Lead + 4 members</td>
+                                </tr>
+                            </table>
+                            <div class="level2">
+                                <h4>Staffing Plan (Professional Support)</h4>
+                                <table>
+                                    <tr>
+                                        <th>Role</th>
+                                        <th>Year 1</th>
+                                        <th>Year 3</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Executive Coordinator</td>
+                                        <td>Part-time</td>
+                                        <td>Full-time</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Placement Officer</td>
+                                        <td>-</td>
+                                        <td>Full-time</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Marketing Specialist</td>
+                                        <td>Freelance</td>
+                                        <td>Part-time</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="expandable">
+                        <div class="expandable-header" onclick="toggleExpand(this)">
+                            <span>Digital Infrastructure Roadmap</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="expandable-content">
+                            <table>
+                                <tr>
+                                    <th>Platform</th>
+                                    <th>Year 1 Solution</th>
+                                    <th>Year 3 Upgrade</th>
+                                </tr>
+                                <tr>
+                                    <td><strong>Website</strong></td>
+                                    <td>WordPress redesign</td>
+                                    <td>Custom portal with member login</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>CRM</strong></td>
+                                    <td>Zoho/HubSpot (Free)</td>
+                                    <td>Enterprise plan with automation</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>LMS</strong></td>
+                                    <td>Google Classroom</td>
+                                    <td>Dedicated LMS (Teachable/Moodle)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Job Board</strong></td>
+                                    <td>Simple Plugin</td>
+                                    <td>Integrated ATS</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. Financial Strategy -->
+            <div id="financial" class="section">
+                <div class="card">
+                    <h2><span style="font-size:1.5em">💰</span> Financial Strategy</h2>
+                    
+                    <div class="expandable open">
+                        <div class="expandable-header" onclick="toggleExpand(this)">
+                            <span>5-Year Revenue Projection (Deep Dive)</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="expandable-content">
+                            <table>
+                                <tr>
+                                    <th>Revenue Stream</th>
+                                    <th>Year 2 Projection</th>
+                                    <th>Year 3 Projection</th>
+                                    <th>Strategy Description</th>
+                                </tr>
+                                <tr>
+                                    <td><strong>Membership Fees</strong></td>
+                                    <td>₹20 Lakhs</td>
+                                    <td>₹30 Lakhs</td>
+                                    <td>Volume growth + Premium tier introduction.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Training Programs</strong></td>
+                                    <td>₹40 Lakhs</td>
+                                    <td>₹70 Lakhs</td>
+                                    <td>High-margin corporate upskilling courses.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Event Revenue</strong></td>
+                                    <td>₹35 Lakhs</td>
+                                    <td>₹50 Lakhs</td>
+                                    <td>Expos, conferences, sponsorship packages.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>CSR & Grants</strong></td>
+                                    <td>₹40 Lakhs</td>
+                                    <td>₹60 Lakhs</td>
+                                    <td>Strategic long-term skilling projects.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Total Revenue</strong></td>
+                                    <td><strong>₹1.35 Cr</strong></td>
+                                    <td><strong>₹2.1 Cr</strong></td>
+                                    <td>Diversified portfolio reducing event risk.</td>
+                                </tr>
+                            </table>
+                            <div class="level2">
+                                <h4>Cost Allocation Strategy</h4>
+                                <ul>
+                                    <li><strong>Program Delivery (40%):</strong> Direct costs for trainers, venues, materials.</li>
+                                    <li><strong>Operations (20%):</strong> Staff salaries, office, software, compliance.</li>
+                                    <li><strong>Marketing & Growth (15%):</strong> Digital ads, PR, event marketing.</li>
+                                    <li><strong>Reserve Fund (25%):</strong> Building a corpus for long-term stability.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. Risks & Mitigation -->
+            <div id="risks" class="section">
+                <div class="card">
+                    <h2><span style="font-size:1.5em">🛡️</span> Risks & Mitigation</h2>
+                    
+                    <div class="expandable open">
+                        <div class="expandable-header" onclick="toggleExpand(this)">
+                            <span>Detailed Risk Matrix</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="expandable-content">
+                            <table>
+                                <tr>
+                                    <th>Risk Category</th>
+                                    <th>Risk Description</th>
+                                    <th>Impact</th>
+                                    <th>Probability</th>
+                                    <th>Mitigation Strategy</th>
+                                </tr>
+                                <tr>
+                                    <td><strong>Operational</strong></td>
+                                    <td><strong>Volunteer Burnout:</strong> Committee members unable to sustain effort.</td>
+                                    <td>High</td>
+                                    <td>High</td>
+                                    <td>Hire full-time Executive Coordinator immediately.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Financial</strong></td>
+                                    <td><strong>Sponsorship Dry-up:</strong> Economic downturn reducing event ads.</td>
+                                    <td>High</td>
+                                    <td>Medium</td>
+                                    <td>Diversify into Govt grants (PMKVY) and steady training income.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Strategic</strong></td>
+                                    <td><strong>Relevance Loss:</strong> Training content becomes outdated.</td>
+                                    <td>Medium</td>
+                                    <td>Medium</td>
+                                    <td>Partner with Tech Giants (Siemens/Fanuc) for curriculum currency.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Engagement</strong></td>
+                                    <td><strong>Low Participation:</strong> Alumni disengage after events.</td>
+                                    <td>Medium</td>
+                                    <td>Medium</td>
+                                    <td>Gamify engagement and offer tangible career services.</td>
+                                </tr>
+                                 <tr>
+                                    <td><strong>Regulatory</strong></td>
+                                    <td><strong>FCRA/Taxation:</strong> Changes in non-profit compliance.</td>
+                                    <td>Medium</td>
+                                    <td>Low</td>
+                                    <td>Retain professional legal counsel and audit services.</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 9. KPI Dashboard -->
+            <div id="monitoring" class="section">
+                <div class="card">
+                    <h2><span style="font-size:1.5em">📊</span> KPI Monitoring Dashboard</h2>
+                    
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-label">Membership Growth</div>
+                            <div class="kpi-value" style="color:#2e7d32">2,500</div>
+                            <div class="kpi-trend trend-up">Target: 5,000 (+100%)</div>
+                            <div style="width:100%; height:10px; background:#eee; margin-top:15px; border-radius:5px;">
+                                <div style="width:50%; height:100%; background:#2e7d32; border-radius:5px;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="kpi-card">
+                            <div class="kpi-label">Placement Success</div>
+                            <div class="kpi-value" style="color:#1565c0">200</div>
+                            <div class="kpi-trend trend-up">Annual Target: 500</div>
+                             <div style="width:100%; height:10px; background:#eee; margin-top:15px; border-radius:5px;">
+                                <div style="width:40%; height:100%; background:#1565c0; border-radius:5px;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="kpi-card">
+                            <div class="kpi-label">Financial Health</div>
+                            <div class="kpi-value" style="color:#f9a825">₹75L</div>
+                            <div class="kpi-trend trend-up">Target: ₹4 Cr</div>
+                             <div style="width:100%; height:10px; background:#eee; margin-top:15px; border-radius:5px;">
+                                <div style="width:18%; height:100%; background:#f9a825; border-radius:5px;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="expandable open">
+                        <div class="expandable-header" onclick="toggleExpand(this)">
+                            <span>Quarterly Tracking Metrics (Detailed)</span>
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="expandable-content">
+                            <table>
+                                <tr>
+                                    <th>Metric Category</th>
+                                    <th>Q1 Status</th>
+                                    <th>Q2 Target</th>
+                                    <th>Status</th>
+                                    <th>Action Required</th>
+                                </tr>
+                                <tr>
+                                    <td><strong>Event Attendance</strong></td>
+                                    <td>150 Avg</td>
+                                    <td>200 Avg</td>
+                                    <td><span class="badge bg-green">On Track</span></td>
+                                    <td>Continue current marketing.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>New MOUs Signed</strong></td>
+                                    <td>3</td>
+                                    <td>5</td>
+                                    <td><span class="badge bg-gold">At Risk</span></td>
+                                    <td>Organize CEO Dinner event.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Training Revenue</strong></td>
+                                    <td>₹2 Lakhs</td>
+                                    <td>₹5 Lakhs</td>
+                                    <td><span class="badge bg-green">On Track</span></td>
+                                    <td>Launch summer batch.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Social Reach</strong></td>
+                                    <td>500 Followers</td>
+                                    <td>1000 Followers</td>
+                                    <td><span class="badge bg-blue">Exceeding</span></td>
+                                    <td>Increase video content.</td>
+                                </tr>
+                            </table>
+                            <div class="strategic-insight">
+                                <strong>Strategic Insight:</strong> While social reach is exceeding targets, the "New MOUs" metric is lagging. Recommendation: The Industry Relations committee should organize a dedicated "CEO Dinner" event to fast-track pending partnership agreements.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div> <!-- End Content -->
+        
+        <div class="footer">
+            <div class="footer-left">
+                &copy; 2025 NTTF Alumni Association Pune Chapter | Strategic Vision Dashboard
+            </div>
+            <div class="footer-right">
+                By Neelavati Research, +91 986 030 2745
+            </div>
+        </div>
+    </div>
+</body>
+</html>
